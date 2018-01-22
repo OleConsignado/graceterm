@@ -5,4 +5,4 @@ set -e
 cd Source/Graceterm
 
 dotnet restore
-dotnet build
+dotnet build -c Release

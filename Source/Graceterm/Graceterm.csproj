@@ -11,7 +11,8 @@
     <RepositoryUrl>https://github.com/matheusneder/graceterm</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>kubernetes rolling-update graceful-shutdown</PackageTags>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>

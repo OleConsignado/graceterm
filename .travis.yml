@@ -3,3 +3,4 @@ mono: none
 dotnet: 1.1.5
 script:
   - ./build.sh
+  - ./deploy.sh

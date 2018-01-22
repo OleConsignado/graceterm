@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2020
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graceterm", "Graceterm\Graceterm.csproj", "{22D2E2C7-05B4-4D0D-B4A1-B5D18EADA574}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{22D2E2C7-05B4-4D0D-B4A1-B5D18EADA574}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22D2E2C7-05B4-4D0D-B4A1-B5D18EADA574}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22D2E2C7-05B4-4D0D-B4A1-B5D18EADA574}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22D2E2C7-05B4-4D0D-B4A1-B5D18EADA574}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E6FD1E9B-1545-418F-8763-F42E54601581}
+	EndGlobalSection
+EndGlobal

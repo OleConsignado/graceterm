@@ -9,7 +9,7 @@ namespace Graceterm
 {
     public class GracetermMiddleware
     {
-        public const string LoggerCategory = "GracefullShutdown";
+        public const string LoggerCategory = "Graceterm";
         public const int SigtermReceived = 0x6E870001;
         public const int WaitingForPendingRequests = 0x6E870002;
         public const int TerminatingGracefully = 0x6E870003;

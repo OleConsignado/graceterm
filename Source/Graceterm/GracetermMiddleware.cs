@@ -15,9 +15,9 @@ namespace Graceterm
         public const int TerminatingGracefully = 0x6E870003;
 
         private readonly RequestDelegate _next;
-        private readonly object _lockPad = new object();
+        private static volatile object _lockPad = new object();
         private readonly ILogger _logger;
-        private int _requestCount = 0;
+        private static volatile int _requestCount = 0;
 
         public GracetermMiddleware(RequestDelegate next, IApplicationLifetime applicationLifetime, ILoggerFactory loggerFactory)
         {
@@ -38,7 +38,7 @@ namespace Graceterm
 
             do
             {
-                Thread.Sleep(1000);
+                Task.Delay(1000).Wait();
                 _logger?.LogInformation(WaitingForPendingRequests, "Current request count: {RequestCount}", _requestCount);
             }
             while (_requestCount > 0);

@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graceterm", "Graceterm\Graceterm.csproj", "{22D2E2C7-05B4-4D0D-B4A1-B5D18EADA574}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graceterm.Tests", "..\Graceterm.Tests\Graceterm.Tests.csproj", "{4DCA30BA-4540-4788-B115-17F173AAD155}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{22D2E2C7-05B4-4D0D-B4A1-B5D18EADA574}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22D2E2C7-05B4-4D0D-B4A1-B5D18EADA574}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22D2E2C7-05B4-4D0D-B4A1-B5D18EADA574}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DCA30BA-4540-4788-B115-17F173AAD155}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DCA30BA-4540-4788-B115-17F173AAD155}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DCA30BA-4540-4788-B115-17F173AAD155}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DCA30BA-4540-4788-B115-17F173AAD155}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,12 @@
 language: csharp
 mono: none
 dotnet: 1.1.5
+
+install:
+- dotnet restore
+
 script:
   - ./build.sh
-  - ./deploy.sh
+  - dotnet test Graceterm.Tests/Graceterm.Tests.csproj  
+#  - ./deploy.sh
+  

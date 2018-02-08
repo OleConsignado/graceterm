@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Source\Graceterm\Graceterm.csproj" />
+    <ProjectReference Include="..\Graceterm\Graceterm.csproj" />
   </ItemGroup>
 
 </Project>

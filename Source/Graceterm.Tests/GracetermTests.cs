@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Graceterm.Tests
 {
-    public class GracefullyTerminationTests
+    public class GracetermTests
     {
         [Fact]
         public async Task ShouldProcessAllPendingRequestsAfterStopRequest()

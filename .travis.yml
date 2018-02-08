@@ -8,5 +8,10 @@ install:
 script:
   - ./build.sh
   - ./test.sh
-#  - ./deploy.sh
   
+deploy:
+  provider: script
+  script: ./deploy.sh  
+  on:
+    branch: release  
+    tags: true

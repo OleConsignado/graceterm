@@ -16,7 +16,7 @@ namespace Graceterm.Tests
     {
         public const string ResponseContent = "hello";
         private readonly int port;
-        private const string ip = "127.0.0.1";
+        private const string ip = "localhost";
 
         public Task ServerTask { get; set; }
 

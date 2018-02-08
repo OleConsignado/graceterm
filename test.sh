@@ -2,6 +2,6 @@
 
 set -e
 
-cd Source/Graceterm
+cd Source/Graceterm.Tests
 
-dotnet test Graceterm.Tests/Graceterm.Tests.csproj  
+dotnet test

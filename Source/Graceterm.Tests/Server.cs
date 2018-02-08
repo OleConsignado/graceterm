@@ -16,7 +16,7 @@ namespace Graceterm.Tests
     {
         public const string ResponseContent = "hello";
         private readonly int port;
-        private const string ip = "localhost";
+        //private const string ip = "localhost";
 
         public Task ServerTask { get; set; }
 
@@ -27,7 +27,7 @@ namespace Graceterm.Tests
             var requestMessage = new HttpRequestMessage(new HttpMethod("GET"), "/");
 
             return Task.Factory.StartNew(() =>
-                    new HttpClient() { BaseAddress = new Uri($"http://{ip}:{port}") }
+                    new HttpClient() { BaseAddress = new Uri($"http://localhost:{port}") }
                         .SendAsync(requestMessage).Result,
                 TaskCreationOptions.LongRunning);
         }
@@ -64,7 +64,7 @@ namespace Graceterm.Tests
             port = FreeTcpPort();
 
             var webHostBuilder = new WebHostBuilder()
-                .UseKestrel(o => o.Listen(IPAddress.Parse(ip), port))
+                .UseKestrel(o => o.Listen(IPAddress.Parse("::1"), port))
                 .ConfigureLogging(loggingBuilder =>
                 {
                     loggingBuilder.AddDebug();

@@ -13,7 +13,7 @@ fi
 
 if [[ ${TRAVIS_BRANCH^^} = *"ALPHA"* ]] || [[ ${TRAVIS_BRANCH^^} = *"BETA"* ]]
 then
-	SUFFIX=$(echo $TRAVIS_BRANCH-build-$TRAVIS_BUILD_NUMBER | sed 's/[^0-9A-Za-z]//g')
+	SUFFIX=$(echo $TRAVIS_BRANCH-build$TRAVIS_BUILD_NUMBER | sed 's/[^0-9A-Za-z-]//g')
 	SUFFIX_ARG="--version-suffix=$SUFFIX"
 fi
 

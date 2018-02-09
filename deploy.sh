@@ -11,12 +11,9 @@ then
 	mkdir $ARTIFACTS_FOLDER
 fi
 
-if [ ${TRAVIS_TAG^^} = *"BETA"* ]
+if [ ${TRAVIS_BRANCH^^} = *"ALPHA"* ] || [ ${TRAVIS_BRANCH^^} = *"BETA"* ]
 then
-	SUFFIX_ARG="--version-suffix=beta-b$TRAVIS_BUILD_NUMBER"
-elif [ ${TRAVIS_TAG^^} = *"ALPHA"* ]
-then
-	SUFFIX_ARG="--version-suffix=alpha-b$TRAVIS_BUILD_NUMBER"
+	SUFFIX_ARG="--version-suffix=p$TRAVIS_BRANCH-b$TRAVIS_BUILD_NUMBER"
 fi
 
 dotnet pack -c Release $SUFFIX_ARG -o $ARTIFACTS_FOLDER

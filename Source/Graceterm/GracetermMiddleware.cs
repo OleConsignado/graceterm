@@ -58,7 +58,11 @@ namespace Graceterm
             {
                 Task.Delay(1000).Wait();
                 _logger.LogInformation(EventId.WaitingForPendingRequests, Messages.WaitingForPendingRequests, _requestCount);
-                _stopRequested = true;
+
+                if (!_stopRequested)
+                {
+                    _stopRequested = true;
+                }
             }
             while (_requestCount > 0 && stopwatch.ElapsedMilliseconds <= _options.Timeout);
 

@@ -52,14 +52,13 @@ namespace Graceterm
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            _stopRequested = true;
-
             _logger.LogInformation(EventId.SigtermReceived, Messages.SigtermReceived);
 
             do
             {
                 Task.Delay(1000).Wait();
                 _logger.LogInformation(EventId.WaitingForPendingRequests, Messages.WaitingForPendingRequests, _requestCount);
+                _stopRequested = true;
             }
             while (_requestCount > 0 && stopwatch.ElapsedMilliseconds <= _options.Timeout);
 

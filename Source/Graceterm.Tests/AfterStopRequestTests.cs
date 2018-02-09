@@ -20,7 +20,7 @@ namespace Graceterm.Tests
                 server.Stop();
             });
 
-            await Task.Delay(100); // Ensure the stopTask will run
+            await Task.Delay(100); // Give a break in order to stopTask start
             await Task.Delay(1500); // Wait to GracetermMiddleware._stopRequested assume true
 
             var result = await server.CreateRequest();

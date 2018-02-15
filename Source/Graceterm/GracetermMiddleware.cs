@@ -57,25 +57,25 @@ namespace Graceterm
             do
             {
                 Task.Delay(1000).Wait();
-                _logger.LogInformation(EventId.WaitingForPendingRequests, Messages.WaitingForPendingRequests, _requestCount);
+                _logger.LogDebug(EventId.WaitingForPendingRequests, Messages.WaitingForPendingRequests, _requestCount);
 
-                if (!_stopRequested)
-                {
-                    _stopRequested = true;
-                }
+                //if (!_stopRequested)
+                //{
+                //    _stopRequested = true;
+                //}
             }
-            while (_requestCount > 0 && stopwatch.ElapsedMilliseconds <= _options.Timeout);
+            while (_requestCount > 0/* && stopwatch.ElapsedMilliseconds <= _options.Timeout*/);
 
             stopwatch.Stop();
 
-            if (_requestCount > 0 && stopwatch.ElapsedMilliseconds > _options.Timeout)
-            {
-                _logger.LogCritical(EventId.TimedOut, Messages.TimedOut, _requestCount);
-            }
-            else
-            {
+            //if (_requestCount > 0 && stopwatch.ElapsedMilliseconds > _options.Timeout)
+            //{
+            //    _logger.LogCritical(EventId.TimedOut, Messages.TimedOut, _requestCount);
+            //}
+            //else
+            //{
                 _logger.LogInformation(EventId.TerminatingGracefully, Messages.TerminatingGracefully);
-            }
+            //}
         }
 
         public async Task Invoke(HttpContext httpContext)

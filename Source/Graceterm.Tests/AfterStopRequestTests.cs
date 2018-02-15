@@ -24,7 +24,7 @@ namespace Graceterm.Tests
             await Task.Delay(1500); // Wait to GracetermMiddleware._stopRequested assume true
 
             var result = await server.CreateRequest();
-            //Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
+            Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
             await stopTask;
         }
     }

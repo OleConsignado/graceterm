@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Diagnostics;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Graceterm
@@ -59,23 +60,23 @@ namespace Graceterm
                 Task.Delay(1000).Wait();
                 _logger.LogDebug(EventId.WaitingForPendingRequests, Messages.WaitingForPendingRequests, _requestCount);
 
-                //if (!_stopRequested)
-                //{
-                //    _stopRequested = true;
-                //}
+                if (!_stopRequested)
+                {
+                    _stopRequested = true;
+                }
             }
             while (_requestCount > 0/* && stopwatch.ElapsedMilliseconds <= _options.Timeout*/);
 
             stopwatch.Stop();
 
-            //if (_requestCount > 0 && stopwatch.ElapsedMilliseconds > _options.Timeout)
-            //{
-            //    _logger.LogCritical(EventId.TimedOut, Messages.TimedOut, _requestCount);
-            //}
-            //else
-            //{
+            if (_requestCount > 0 && stopwatch.ElapsedMilliseconds > _options.Timeout)
+            {
+                _logger.LogCritical(EventId.TimedOut, Messages.TimedOut, _requestCount);
+            }
+            else
+            {
                 _logger.LogInformation(EventId.TerminatingGracefully, Messages.TerminatingGracefully);
-            //}
+            }
         }
 
         public async Task Invoke(HttpContext httpContext)
@@ -83,6 +84,18 @@ namespace Graceterm
             if (_stopRequested)
             {
                 _logger.LogCritical(EventId.IrregularRequestReceived, Messages.IrregularRequestReceived);
+
+                var sb = new StringBuilder();
+
+                sb.AppendLine("Request Headers:");
+
+                foreach(var header in httpContext.Request.Headers)
+                {
+                    sb.AppendLine($"{header.Key}: {header.Value}");
+                }
+
+                _logger.LogDebug(sb.ToString());
+
                 httpContext.Response.StatusCode = 503;
                 await httpContext.Response.WriteAsync("503 - Service unavailable.");
             }

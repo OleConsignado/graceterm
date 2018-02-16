@@ -10,7 +10,7 @@ namespace Graceterm
         {
             applicationBuilder.UseMiddleware<GracetermMiddleware>(Options.Create(new GracetermOptions()
             {
-                Timeout = 60000
+                Timeout = 60
             }));
 
             return applicationBuilder;

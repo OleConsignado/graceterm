@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Graceterm.Tests
 {
-    public class AfterStopRequestTests
+    public class StopAcceptingNewRequestAfterStopRequestTests
     {
         [Fact]
         public async Task ShouldReturnServiceUnavailableForResquestCreatedAfterStopRequest()

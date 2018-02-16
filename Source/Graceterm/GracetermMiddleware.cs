@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,19 +11,6 @@ namespace Graceterm
     public class GracetermMiddleware
     {
         public const string LoggerCategory = "Graceterm";
-
-        public static class EventId
-        {
-            // Information
-            public const int SigtermReceived = 0x0ab0;
-            public const int WaitingForPendingRequests = 0x0ab1;
-            public const int TerminatingGracefully = 0x0ab2;
-
-            // Critical 
-            public const int IrregularRequestReceived = 0x1ab0;
-            public const int TimedOut = 0x1ab1;
-        }
-
         private readonly RequestDelegate _next;
         private static volatile object _lockPad = new object();
         private readonly ILogger _logger;
@@ -43,58 +29,72 @@ namespace Graceterm
             }
 
             applicationLifetime.ApplicationStopping.Register(OnApplicationStopping);
+            applicationLifetime.ApplicationStopped.Register(OnApplicationStopped);
 
         }
 
         private volatile static bool _stopRequested = false;
+        private volatile static int _stopRequestedTime = 0;
+        private static long AssemblyLoadedWhenInTicks = DateTime.Now.Ticks;
+
+        private int ComputeIntegerTimeReference()
+            =>
+            (int)(((DateTime.Now.Ticks - AssemblyLoadedWhenInTicks) / TimeSpan.TicksPerMillisecond / 1000) & 0x3fffffff);
+
+        private bool TimeoutOccurred()
+        {
+            return ComputeIntegerTimeReference() - _stopRequestedTime > _options.Timeout;
+        }
 
         private void OnApplicationStopping()
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            _logger.LogInformation(EventId.SigtermReceived, Messages.SigtermReceived);
+            _logger.LogInformation("Sigterm received, will waiting for pending requests to complete if has any.");
 
             do
             {
                 Task.Delay(1000).Wait();
-                _logger.LogDebug(EventId.WaitingForPendingRequests, Messages.WaitingForPendingRequests, _requestCount);
+                _logger.LogDebug("Waiting for pending requests, current request count: {RequestCount}.", _requestCount);
 
                 if (!_stopRequested)
                 {
                     _stopRequested = true;
+                    _stopRequestedTime = ComputeIntegerTimeReference();
                 }
             }
-            while (_requestCount > 0/* && stopwatch.ElapsedMilliseconds <= _options.Timeout*/);
+            while (_requestCount > 0 && !TimeoutOccurred());
 
-            stopwatch.Stop();
-
-            if (_requestCount > 0 && stopwatch.ElapsedMilliseconds > _options.Timeout)
+            if (_requestCount > 0 && TimeoutOccurred())
             {
-                _logger.LogCritical(EventId.TimedOut, Messages.TimedOut, _requestCount);
+                _logger.LogCritical("Timeout ocurred! Application will terminate with {RequestCount} pedding requests.", _requestCount);
             }
             else
             {
-                _logger.LogInformation(EventId.TerminatingGracefully, Messages.TerminatingGracefully);
+                _logger.LogInformation("Pending requests were completed, application will now terminate gracefully.");
             }
+        }
+
+        private void OnApplicationStopped()
+        {
+            _logger.LogDebug("ApplicationStopped event fired.");
         }
 
         public async Task Invoke(HttpContext httpContext)
         {
             if (_stopRequested)
             {
-                _logger.LogCritical(EventId.IrregularRequestReceived, Messages.IrregularRequestReceived);
-
-                var sb = new StringBuilder();
-
-                sb.AppendLine("Request Headers:");
-
-                foreach(var header in httpContext.Request.Headers)
+                using (_logger.BeginScope("Irregular request received"))
                 {
-                    sb.AppendLine($"{header.Key}: {header.Value}");
-                }
+                    _logger.LogCritical("Request received, but this application instance is not accepting new requests because it asked for terminate (eg.: a sigterm were received). Responding as service unavailable (HTTP 503).");
+                    var sb = new StringBuilder();
+                    sb.AppendLine("Request Headers:");
 
-                _logger.LogDebug(sb.ToString());
+                    foreach (var header in httpContext.Request.Headers)
+                    {
+                        sb.AppendLine($"{header.Key}: {header.Value}");
+                    }
+
+                    _logger.LogDebug(sb.ToString());
+                }
 
                 httpContext.Response.StatusCode = 503;
                 await httpContext.Response.WriteAsync("503 - Service unavailable.");

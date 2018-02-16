@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,6 +17,9 @@ namespace Graceterm
         private readonly ILogger _logger;
         private static volatile int _requestCount = 0;
         private readonly GracetermOptions _options;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static int RequestCount => _requestCount;
 
         public GracetermMiddleware(RequestDelegate next, IApplicationLifetime applicationLifetime, ILoggerFactory loggerFactory, IOptions<GracetermOptions> options)
         {
@@ -43,8 +47,11 @@ namespace Graceterm
 
         private bool TimeoutOccurred()
         {
-            return ComputeIntegerTimeReference() - _stopRequestedTime > _options.Timeout;
+            return ComputeIntegerTimeReference() - _stopRequestedTime > _options.TimeoutSeconds;
         }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static bool TimeoutOccurredWithPenddingRequests { get; private set; }
 
         private void OnApplicationStopping()
         {
@@ -66,6 +73,7 @@ namespace Graceterm
             if (_requestCount > 0 && TimeoutOccurred())
             {
                 _logger.LogCritical("Timeout ocurred! Application will terminate with {RequestCount} pedding requests.", _requestCount);
+                TimeoutOccurredWithPenddingRequests = true;
             }
             else
             {

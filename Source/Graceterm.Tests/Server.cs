@@ -59,6 +59,7 @@ namespace Graceterm.Tests
                 .ConfigureLogging(loggingBuilder =>
                 {
                     loggingBuilder.AddDebug();
+                    loggingBuilder.SetMinimumLevel(LogLevel.Trace);
                 })
                 .Configure(app => {
                     _applicationLifetime = app.ApplicationServices.GetService<IApplicationLifetime>();

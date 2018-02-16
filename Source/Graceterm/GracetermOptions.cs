@@ -5,6 +5,6 @@
         /// <summary>
         /// Timeout in seconds.
         /// </summary>
-        public int Timeout { get; set; }
+        public int TimeoutSeconds { get; set; }
     }
 }

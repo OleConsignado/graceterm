@@ -4,7 +4,9 @@
     <TargetFramework>netstandard1.6</TargetFramework>
     <PackageProjectUrl>https://github.com/matheusneder/graceterm</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/matheusneder/graceterm/blob/master/LICENSE</PackageLicenseUrl>
-    <Description>AspNet Core middleware to ensure consistent responses while perform application's shutting down. It'll help to get kubernetes zerodowntime rolling updates.</Description>
+    <Description>Graceterm middleware provides implementation to ensure graceful shutdown of aspnet core applications. 
+It was originally written to get zero downtime while performing Kubernetes rolling updates.
+The basic concept is: After aplication received a SIGTERM (a signal asking it to terminate), Graceterm will hold it alive till all pending requests are completed or a timeout ocurr.</Description>
     <Copyright>Matheus Neder (c) 2018</Copyright>
     <Company />
     <Authors>Matheus Neder</Authors>

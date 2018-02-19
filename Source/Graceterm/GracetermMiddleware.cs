@@ -9,9 +9,19 @@ using System.Threading.Tasks;
 
 namespace Graceterm
 {
+    /// <summary>
+    /// Graceterm middleware provides implementation to ensure graceful shutdown of aspnet core applications. 
+    /// It was originally written to get zero downtime while performing Kubernetes rolling updates.
+    /// The basic concept is: After aplication received a SIGTERM (a signal asking it to terminate), 
+    /// Graceterm will hold it alive till all pending requests are completed or a timeout ocurr. 
+    /// </summary>
     public class GracetermMiddleware
     {
+        /// <summary>
+        /// The logger category for log events created here.
+        /// </summary>
         public const string LoggerCategory = "Graceterm";
+
         private readonly RequestDelegate _next;
         private static volatile object _lockPad = new object();
         private readonly ILogger _logger;
@@ -50,6 +60,7 @@ namespace Graceterm
             return ComputeIntegerTimeReference() - _stopRequestedTime > _options.TimeoutSeconds;
         }
 
+        // TimeoutOccurredWithPenddingRequests property exists for test purpose only (used in TimeoutTests.ShouldStopIfTimeoutOccur)
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static bool TimeoutOccurredWithPenddingRequests { get; private set; }
 
@@ -73,7 +84,20 @@ namespace Graceterm
             if (_requestCount > 0 && TimeoutOccurred())
             {
                 _logger.LogCritical("Timeout ocurred! Application will terminate with {RequestCount} pedding requests.", _requestCount);
+
+                // This assignment is done for tests purpose only, TimeoutOccurredWithPenddingRequests will be checked in TimeoutTests.ShouldStopIfTimeoutOccur
+                // to verify if the condition occured.
                 TimeoutOccurredWithPenddingRequests = true;
+
+                // Ensure to terminate process if it dont terminate by it self.
+                Task.Run(async () =>
+                {
+                    await Task.Delay(30000);
+                    _logger.LogWarning("(TIMEOUT) Forcing process to exit, it should terminated by it self, if you seeing this message, must be something wrong.");
+                    await Task.Delay(1000);
+                    Environment.Exit(124);
+                });
+                
             }
             else
             {
@@ -92,7 +116,7 @@ namespace Graceterm
             {
                 using (_logger.BeginScope("Irregular request received"))
                 {
-                    _logger.LogCritical("Request received, but this application instance is not accepting new requests because it asked for terminate (eg.: a sigterm were received). Responding as service unavailable (HTTP 503).");
+                    _logger.LogCritical("Request received, but this application instance is not accepting new requests because it asked for terminate (eg.: a sigterm were received). Seding response as service unavailable (HTTP 503).");
                     var sb = new StringBuilder();
                     sb.AppendLine("Request Headers:");
 

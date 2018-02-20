@@ -27,7 +27,7 @@ namespace Graceterm
         private readonly ILogger _logger;
         private static volatile int _requestCount = 0;
         private readonly GracetermOptions _options;
-        private readonly IServiceUnavailableResponseHandler _serviceUnavailableResponseHandler;
+        private readonly IIncommingRequestsAfterAppAskedToTerminateHandler _incommingRequestsAfterAppAskedToTerminateHandler;
 
         #region [Test properties]
 
@@ -54,7 +54,7 @@ namespace Graceterm
                 throw new ArgumentNullException(nameof(applicationLifetime));
             }
             
-            _serviceUnavailableResponseHandler = _options.ServiceUnavailableResponseHandler;
+            _incommingRequestsAfterAppAskedToTerminateHandler = _options.IncommingRequestsAfterAppAskedToTerminateHandler;
 
             applicationLifetime.ApplicationStopping.Register(OnApplicationStopping);
             applicationLifetime.ApplicationStopped.Register(OnApplicationStopped);
@@ -130,7 +130,7 @@ namespace Graceterm
             }
             else if (_stopRequested)
             {
-                await ServiceUnavailable(httpContext);
+                await HandleIncommingRequestAfterAppAskedToTerminate(httpContext);
             }
             else
             {
@@ -150,7 +150,7 @@ namespace Graceterm
 
         private bool ShouldIgnore(HttpContext httpContext)
         {
-            foreach (var ignoredPath in _options.IgnorePaths)
+            foreach (var ignoredPath in _options.IgnoredPaths)
             {
                 if (httpContext.Request.Path.StartsWithSegments(ignoredPath))
                 {
@@ -161,11 +161,11 @@ namespace Graceterm
             return false;
         }
 
-        private async Task ServiceUnavailable(HttpContext httpContext)
+        private async Task HandleIncommingRequestAfterAppAskedToTerminate(HttpContext httpContext)
         {
             _logger.LogCritical("Request received, but this application instance is not accepting new requests because it asked for terminate (eg.: a sigterm were received). Seding response as service unavailable (HTTP 503).");
 
-            await _serviceUnavailableResponseHandler.GenerateResponseAsync(httpContext);
+            await _incommingRequestsAfterAppAskedToTerminateHandler.HandleRequestAsync(httpContext);
         }
     }
 

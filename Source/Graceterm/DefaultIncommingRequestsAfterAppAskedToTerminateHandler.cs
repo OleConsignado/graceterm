@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace Graceterm
 {
-    internal class DefaultServiceUnavailableResponseHandler : IServiceUnavailableResponseHandler
+    internal class DefaultIncommingRequestsAfterAppAskedToTerminateHandler : IIncommingRequestsAfterAppAskedToTerminateHandler
     {
-        public async Task GenerateResponseAsync(HttpContext httpContext)
+        public async Task HandleRequestAsync(HttpContext httpContext)
         {
             httpContext.Response.StatusCode = 503;
             await httpContext.Response.WriteAsync("503 - Service unavailable.");

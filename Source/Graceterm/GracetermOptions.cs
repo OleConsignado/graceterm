@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Graceterm
 {
@@ -29,12 +31,16 @@ namespace Graceterm
             }
         }
 
+        internal Func<HttpContext, Task> CustomPosSigtermRequestsHandler { get; private set; }
+
         /// <summary>
         /// By default graceterm send a 503 response, with a "503 - Service unavailable" text body 
         /// for requests initiated after application has asked to terminated. You may modify this
-        /// behavior by providing a <see cref="IIncommingRequestsAfterAppAskedToTerminateHandler"/> custom
-        /// implementation.
+        /// behavior by providing a action to handle this requests.
         /// </summary>
-        public IIncommingRequestsAfterAppAskedToTerminateHandler IncommingRequestsAfterAppAskedToTerminateHandler { get; set; } = new DefaultIncommingRequestsAfterAppAskedToTerminateHandler();
+        public void UseCustomPosSigtermIncommingRequestsHandler(Func<HttpContext, Task> customPosSigtermRequestsHandler)
+        {
+            CustomPosSigtermRequestsHandler = customPosSigtermRequestsHandler;
+        }
     }
 }

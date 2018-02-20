@@ -27,7 +27,12 @@ namespace Graceterm
         private readonly ILogger _logger;
         private static volatile int _requestCount = 0;
         private readonly GracetermOptions _options;
-        private readonly IIncommingRequestsAfterAppAskedToTerminateHandler _incommingRequestsAfterAppAskedToTerminateHandler;
+
+        private Func<HttpContext, Task> _posSigtermRequestsHandler = async (httpContext) => 
+        {
+            httpContext.Response.StatusCode = 503;
+            await httpContext.Response.WriteAsync("503 - Service unavailable.");
+        };
 
         #region [Test properties]
 
@@ -53,8 +58,11 @@ namespace Graceterm
             {
                 throw new ArgumentNullException(nameof(applicationLifetime));
             }
-            
-            _incommingRequestsAfterAppAskedToTerminateHandler = _options.IncommingRequestsAfterAppAskedToTerminateHandler;
+
+            if (_options.CustomPosSigtermRequestsHandler != null)
+            {
+                _posSigtermRequestsHandler = _options.CustomPosSigtermRequestsHandler;
+            }
 
             applicationLifetime.ApplicationStopping.Register(OnApplicationStopping);
             applicationLifetime.ApplicationStopped.Register(OnApplicationStopped);
@@ -165,7 +173,7 @@ namespace Graceterm
         {
             _logger.LogCritical("Request received, but this application instance is not accepting new requests because it asked for terminate (eg.: a sigterm were received). Seding response as service unavailable (HTTP 503).");
 
-            await _incommingRequestsAfterAppAskedToTerminateHandler.HandleRequestAsync(httpContext);
+            await _posSigtermRequestsHandler.Invoke(httpContext);
         }
     }
 

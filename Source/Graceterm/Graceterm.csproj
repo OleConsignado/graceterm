@@ -13,7 +13,7 @@ The basic concept is: After aplication received a SIGTERM (a signal asking it to
     <Authors>MN Consulting</Authors>
     <RepositoryUrl>https://github.com/mnconsulting/graceterm</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>kubernetes rolling-update graceful-shutdown</PackageTags>
+    <PackageTags>aspnet-core zero-downtime high-availability middleware kubernetes rolling-update graceful-shutdown</PackageTags>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <VersionPrefix>1.0.4</VersionPrefix>
   </PropertyGroup>

@@ -1,9 +1,7 @@
 #!/bin/bash
 
 set -e
-
 cd Source/Graceterm
-
 ARTIFACTS_FOLDER=./artifacts
 
 if [ ! -d $ARTIFACTS_FOLDER ]

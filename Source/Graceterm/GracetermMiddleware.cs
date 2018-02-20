@@ -27,9 +27,21 @@ namespace Graceterm
         private readonly ILogger _logger;
         private static volatile int _requestCount = 0;
         private readonly GracetermOptions _options;
+        private readonly IServiceUnavailableResponseHandler _serviceUnavailableResponseHandler;
+
+        #region [Test properties]
+
+        //
+        // this properties exists for test purpose only (used in TimeoutTests.ShouldStopIfTimeoutOccur)
+        //
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static int RequestCount => _requestCount;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static bool TimeoutOccurredWithPenddingRequests { get; private set; }
+
+        #endregion
 
         public GracetermMiddleware(RequestDelegate next, IApplicationLifetime applicationLifetime, ILoggerFactory loggerFactory, IOptions<GracetermOptions> options)
         {
@@ -41,6 +53,8 @@ namespace Graceterm
             {
                 throw new ArgumentNullException(nameof(applicationLifetime));
             }
+            
+            _serviceUnavailableResponseHandler = _options.ServiceUnavailableResponseHandler;
 
             applicationLifetime.ApplicationStopping.Register(OnApplicationStopping);
             applicationLifetime.ApplicationStopped.Register(OnApplicationStopped);
@@ -60,10 +74,6 @@ namespace Graceterm
             return ComputeIntegerTimeReference() - _stopRequestedTime > _options.TimeoutSeconds;
         }
 
-        // TimeoutOccurredWithPenddingRequests property exists for test purpose only (used in TimeoutTests.ShouldStopIfTimeoutOccur)
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static bool TimeoutOccurredWithPenddingRequests { get; private set; }
-
         private void OnApplicationStopping()
         {
             _logger.LogInformation("Sigterm received, will waiting for pending requests to complete if has any.");
@@ -71,7 +81,7 @@ namespace Graceterm
             do
             {
                 Task.Delay(1000).Wait();
-                _logger.LogDebug("Waiting for pending requests, current request count: {RequestCount}.", _requestCount);
+                _logger.LogInformation("Waiting for pending requests, current request count: {RequestCount}.", _requestCount);
 
                 if (!_stopRequested)
                 {
@@ -107,29 +117,20 @@ namespace Graceterm
 
         private void OnApplicationStopped()
         {
-            _logger.LogDebug("ApplicationStopped event fired.");
+            _logger.LogInformation("ApplicationStopped event fired.");
         }
+
+        
 
         public async Task Invoke(HttpContext httpContext)
         {
-            if (_stopRequested)
+            if (ShouldIgnore(httpContext))
             {
-                using (_logger.BeginScope("Irregular request received"))
-                {
-                    _logger.LogCritical("Request received, but this application instance is not accepting new requests because it asked for terminate (eg.: a sigterm were received). Seding response as service unavailable (HTTP 503).");
-                    var sb = new StringBuilder();
-                    sb.AppendLine("Request Headers:");
-
-                    foreach (var header in httpContext.Request.Headers)
-                    {
-                        sb.AppendLine($"{header.Key}: {header.Value}");
-                    }
-
-                    _logger.LogDebug(sb.ToString());
-                }
-
-                httpContext.Response.StatusCode = 503;
-                await httpContext.Response.WriteAsync("503 - Service unavailable.");
+                await _next.Invoke(httpContext);
+            }
+            else if (_stopRequested)
+            {
+                await ServiceUnavailable(httpContext);
             }
             else
             {
@@ -145,6 +146,26 @@ namespace Graceterm
                     _requestCount--;
                 }
             }
+        }
+
+        private bool ShouldIgnore(HttpContext httpContext)
+        {
+            foreach (var ignoredPath in _options.IgnorePaths)
+            {
+                if (httpContext.Request.Path.StartsWithSegments(ignoredPath))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private async Task ServiceUnavailable(HttpContext httpContext)
+        {
+            _logger.LogCritical("Request received, but this application instance is not accepting new requests because it asked for terminate (eg.: a sigterm were received). Seding response as service unavailable (HTTP 503).");
+
+            await _serviceUnavailableResponseHandler.GenerateResponseAsync(httpContext);
         }
     }
 

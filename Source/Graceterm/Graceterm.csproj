@@ -4,9 +4,10 @@
     <TargetFramework>netstandard1.6</TargetFramework>
     <PackageProjectUrl>https://github.com/mnconsulting/graceterm</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/matheusneder/graceterm/blob/master/LICENSE</PackageLicenseUrl>
-    <Description>Graceterm middleware provides implementation to ensure graceful shutdown of aspnet core applications. 
+    <Description>Graceterm middleware provides implementation to ensure graceful shutdown of AspNet Core applications. The basic concept is: After aplication received a SIGTERM (a signal asking it to terminate), Graceterm will hold it alive till all pending requests are completed or a timeout ocurr.</Description>
+    <Summary>Graceterm middleware provides implementation to ensure graceful shutdown of AspNet Core applications. 
 It was originally written to get zero downtime while performing Kubernetes rolling updates.
-The basic concept is: After aplication received a SIGTERM (a signal asking it to terminate), Graceterm will hold it alive till all pending requests are completed or a timeout ocurr.</Description>
+The basic concept is: After aplication received a SIGTERM (a signal asking it to terminate), Graceterm will hold it alive till all pending requests are completed or a timeout ocurr.</Summary>
     <Copyright>MN Consulting (c) 2018</Copyright>
     <Company>MN Consulting</Company>
     <Authors>MN Consulting</Authors>
@@ -19,6 +20,11 @@ The basic concept is: After aplication received a SIGTERM (a signal asking it to
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netstandard1.6\Graceterm.xml</DocumentationFile>
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard1.6\Graceterm.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
   </PropertyGroup>
 

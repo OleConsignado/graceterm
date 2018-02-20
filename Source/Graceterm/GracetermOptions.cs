@@ -36,7 +36,7 @@ namespace Graceterm
         /// <summary>
         /// By default graceterm send a 503 response, with a "503 - Service unavailable" text body 
         /// for requests initiated after application has asked to terminated. You may modify this
-        /// behavior by providing a action to handle this requests.
+        /// behavior by providing a delegate to handle this requests.
         /// </summary>
         public void UseCustomPosSigtermIncommingRequestsHandler(Func<HttpContext, Task> customPosSigtermRequestsHandler)
         {

@@ -57,8 +57,6 @@ app.UseGraceterm(options =>
 });
 ```
 
-You may also define a custom timeout: `app.UseGraceterm(o => o.TimeoutSeconds = 30);` (default timeout is 60 seconds).
-
 ## Contribute
 
-Pull requests are welcome.
+Issues and pull requests are welcome.

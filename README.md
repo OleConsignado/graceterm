@@ -9,7 +9,7 @@ The basic concept is: After aplication received a SIGTERM (a signal asking it to
 
 Install Nuget package: [Graceterm](https://www.nuget.org/packages/Graceterm/)
 
-Considering a standard AspNet Core application, edit `Configure` method of `Startup` by adding `app.UseGraceterm()` invocation. The graceterm should be on top of request pipeline to work properly, this means that you must add the `app.UseGraceterm()` invocation before any other `app.UseSomething()`.
+Considering a standard AspNet Core application, edit `Configure` method of `Startup` by adding `app.UseGraceterm()` invocation. The *graceterm* should be on top of request pipeline to work properly, this means that you must add the `app.UseGraceterm()` invocation before any other `app.UseSomething()`.
 If you are using a custom logging configuration, you should put the code wich configures log before the `app.UseGraceterm()` in order to Graceterm generate logs according to your preferences.
 
 ```cs
@@ -21,12 +21,15 @@ public class Startup
     
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ...)
     {
-        // custom logging configuration here
+        //
+        // Custom logging configuration goes here.
+        //
 
-        app.UseGraceterm();
+        // Add graceterm just after logging configuration and before 
+        // any other middleware.
+        app.UseGraceterm(); 
 
-        app.UseMvc();
-        
+        app.UseOtherMiddleware();       
         ...
     }
     ...
@@ -52,7 +55,7 @@ app.UseGraceterm(options =>
     // By default graceterm send a 503 response, with a "503 - Service unavailable" text body 
     // for requests initiated after application has asked to terminated. You may modify this
     // behavior by providing a Func<HttpContext, Task> to handle this requests.    
-    options.UseCustomPosSigtermIncommingRequestsHandler(async (httpContext) =>
+    options.UseCustomPostSigtermIncommingRequestsHandler(async (httpContext) =>
     {
         httpContext.Response.StatusCode = 503;
         await httpContext.Response.WriteAsync("My custom message!");

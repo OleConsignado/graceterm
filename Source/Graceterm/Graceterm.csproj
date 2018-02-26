@@ -15,7 +15,7 @@ The basic concept is: After aplication received a SIGTERM (a signal asking it to
     <RepositoryType>Git</RepositoryType>
     <PackageTags>aspnet-core zero-downtime high-availability middleware kubernetes rolling-update graceful-shutdown</PackageTags>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <VersionPrefix>1.0.4</VersionPrefix>
+    <VersionPrefix>1.0.5</VersionPrefix>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

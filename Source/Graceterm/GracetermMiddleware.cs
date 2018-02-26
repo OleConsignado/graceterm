@@ -59,9 +59,9 @@ namespace Graceterm
                 throw new ArgumentNullException(nameof(applicationLifetime));
             }
 
-            if (_options.CustomPosSigtermRequestsHandler != null)
+            if (_options.CustomPostSigtermRequestsHandler != null)
             {
-                _posSigtermRequestsHandler = _options.CustomPosSigtermRequestsHandler;
+                _posSigtermRequestsHandler = _options.CustomPostSigtermRequestsHandler;
             }
 
             applicationLifetime.ApplicationStopping.Register(OnApplicationStopping);

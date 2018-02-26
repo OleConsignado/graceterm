@@ -55,6 +55,8 @@ namespace Graceterm.Tests
 
         protected Server(GracetermOptions gracetermOptions)
         {
+            GracetermMiddleware.DisableTerminationFallback = true;
+
             var webHostBuilder = new WebHostBuilder()
                 .ConfigureLogging(loggingBuilder =>
                 {

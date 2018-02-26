@@ -46,6 +46,9 @@ namespace Graceterm
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static bool TimeoutOccurredWithPenddingRequests { get; private set; }
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static bool DisableTerminationFallback { get; set; } = false;
+
         #endregion
 
         public GracetermMiddleware(RequestDelegate next, IApplicationLifetime applicationLifetime, ILoggerFactory loggerFactory, IOptions<GracetermOptions> options)
@@ -107,14 +110,17 @@ namespace Graceterm
                 // to verify if the condition occured.
                 TimeoutOccurredWithPenddingRequests = true;
 
-                // Ensure to terminate process if it dont terminate by it self.
-                Task.Run(async () =>
+                if (!DisableTerminationFallback)
                 {
-                    await Task.Delay(30000);
-                    _logger.LogWarning("(TIMEOUT) Forcing process to exit, it should terminated by it self, if you seeing this message, must be something wrong.");
-                    await Task.Delay(1000);
-                    Environment.Exit(124);
-                });
+                    // Ensure to terminate process if it dont terminate by it self.
+                    Task.Run(async () =>
+                    {
+                        await Task.Delay(1000); // Give a last chance to process terminate by it self
+                        _logger.LogWarning("(TIMEOUT) Forcing process to exit, it should terminated by it self, if you seeing this message, must be something wrong.");
+                        await Task.Delay(2000); // Give a break in order to the above log got written
+                        Environment.Exit(124); // Terminate the process. 124 exit code means timeout for unix systems
+                    });
+                }
                 
             }
             else

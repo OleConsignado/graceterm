@@ -5,7 +5,7 @@ Graceterm is a AspNet Core middleware wich provides implementation to ensure gra
 It was originally written to get zero downtime while performing Kubernetes rolling updates.
 The basic concept is: After aplication received a SIGTERM (a signal asking it to terminate), graceterm will hold it alive till all pending requests are completed or a timeout ocurr.
 
-If you're interested in configuring aspnet core app on a Kubernetes cluster to get zero downtime updates and wondering about what needs to be done, you should take look at this aricle: https://github.com/mnconsulting/graceterm/wiki/Zero-downtime-AspNet-Core-and-Kubernetes-rolling-updates.
+If you're interested in configuring aspnet core app on a Kubernetes cluster to get zero downtime updates and wondering about what needs to be done, take look at https://github.com/mnconsulting/graceterm/wiki/Zero-downtime-AspNet-Core-and-Kubernetes-rolling-updates.
 
 ## Usage
 

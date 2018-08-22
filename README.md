@@ -1,5 +1,5 @@
 # Graceterm 
-[![Build Status](https://travis-ci.org/mnconsulting/graceterm.svg?branch=master)](https://travis-ci.org/mnconsulting/graceterm)
+[![Build Status](https://travis-ci.org/OleConsignado/graceterm.svg?branch=master)](https://travis-ci.org/OleConsignado/graceterm)
 
 Graceterm is a AspNet Core middleware wich provides implementation to ensure graceful shutdown of the application. 
 It was originally written to get zero downtime while performing Kubernetes rolling updates.

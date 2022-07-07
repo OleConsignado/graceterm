@@ -88,17 +88,16 @@ namespace Graceterm
         private void OnApplicationStopping()
         {
             _logger.LogInformation("Sigterm received, will waiting for pending requests to complete if has any.");
-
+            if (!_stopRequested)
+            {
+                _stopRequested = true;
+                _stopRequestedTime = ComputeIntegerTimeReference();
+            }
+            
             do
             {
-                Task.Delay(1000).Wait();
                 _logger.LogInformation("Waiting for pending requests, current request count: {RequestCount}.", _requestCount);
-
-                if (!_stopRequested)
-                {
-                    _stopRequested = true;
-                    _stopRequestedTime = ComputeIntegerTimeReference();
-                }
+                Task.Delay(1000).Wait();
             }
             while (_requestCount > 0 && !TimeoutOccurred());
 
@@ -144,7 +143,7 @@ namespace Graceterm
             }
             else if (_stopRequested)
             {
-                await HandleIncommingRequestAfterAppAskedToTerminate(httpContext);
+                await HandleIncomingRequestAfterAppAskedToTerminate(httpContext);
             }
             else
             {
@@ -175,7 +174,7 @@ namespace Graceterm
             return false;
         }
 
-        private async Task HandleIncommingRequestAfterAppAskedToTerminate(HttpContext httpContext)
+        private async Task HandleIncomingRequestAfterAppAskedToTerminate(HttpContext httpContext)
         {
             _logger.LogCritical("Request received, but this application instance is not accepting new requests because it asked for terminate (eg.: a sigterm were received). Seding response as service unavailable (HTTP 503).");
 
